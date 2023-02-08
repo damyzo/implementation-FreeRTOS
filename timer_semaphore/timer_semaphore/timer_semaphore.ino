@@ -31,8 +31,7 @@ int logic = 1;
 void setup() {
     Serial.begin(9600); //Start the serial monitor
     pinMode(push_button, INPUT_PULLUP); // Set pin mode to interrupt button
-    pinMode(push_button1, INPUT_PULLUP); // Set pin mode to interrupt button
-    
+    pinMode(push_button1, INPUT_PULLUP); // Set pin mode to interrupt button  
     //Setup the pin modes for the first semaphore
     pinMode(semaphore1_green, OUTPUT);
     pinMode(semaphore1_yellow, OUTPUT);
@@ -49,8 +48,6 @@ void setup() {
     //Create tasks for handling the interrupt
     xTaskCreate(TaskPedestrian, "Task1", 128, NULL, configMAX_PRIORITIES-1, NULL);  
     xTaskCreate(TaskPedestrian, "Task2", 128, NULL, 0, NULL);
-    
-    
     
     //Peiodic timer
     timer = xTimerCreate( "Timer", pdMS_TO_TICKS(10000), pdTRUE, 0, vPeriodicTimerCallback);
@@ -85,17 +82,13 @@ void interruptHandler() {
 //Task function to handle the interrupt 
 void TaskPedestrian(void *pvParameters)
 {
-  
   for (;;) {
     if (xSemaphoreTake(mutex, 10) == pdTRUE)
     {
-      Serial.println(pcTaskGetName(NULL));    
       xSemaphoreGive(mutex);
     }
     if (xSemaphoreTake(interruptSemaphore, 3) == pdPASS) {
-      
-        Serial.println("Pedestrian semaphore started");
-      
+
       xTimerStop(timer, 0);
       digitalWrite(semaphore2_green, LOW);
       digitalWrite(semaphore1_green, LOW);
@@ -112,16 +105,13 @@ void TaskPedestrian(void *pvParameters)
       digitalWrite(sempahore1_red, HIGH);
       digitalWrite(sempahore2_red, HIGH);
       vPortDelay(10000);
-             
       firstTime = true;
-      Serial.println("Pedestrian semaphore ended.");
       xTimerStart(timer, 0);      
     }
     vTaskDelay(10);
   }
 } 
 void vOneShotTimerCallback(){
-
       digitalWrite(sempahore1_red, HIGH);
       digitalWrite(sempahore2_red, HIGH);
       vPortDelay(400);
@@ -167,47 +157,35 @@ void vPeriodicTimerCallback(){
   if(logic % 2== 0){
       if(!firstTime){
         digitalWrite(semaphore1_green, LOW);
-        
         digitalWrite(semaphore1_yellow, HIGH);
         vPortDelay(400);   
         digitalWrite(semaphore1_yellow, LOW);
     }else{
       firstTime = false;            
     }
-        
-        
         digitalWrite(sempahore1_red, HIGH);
         vPortDelay(1000);    
         digitalWrite(sempahore2_red, LOW);
-        
         digitalWrite(semaphore2_yellow, HIGH);
         vPortDelay(400);       
         digitalWrite(semaphore2_yellow, LOW);
-    
         digitalWrite(semaphore2_green, HIGH);
         logic = 1;
-       
-        
-        
   }else{
     if(!firstTime){
       digitalWrite(semaphore2_green, LOW);
-        
       digitalWrite(semaphore2_yellow, HIGH);
       vPortDelay(400);    
       digitalWrite(semaphore2_yellow, LOW);
     }else{
       firstTime = false;            
     }
-      
     digitalWrite(sempahore2_red, HIGH);
     vPortDelay(1000);     
     digitalWrite(sempahore1_red, LOW);
-        
     digitalWrite(semaphore1_yellow, HIGH);
     vPortDelay(400);   
     digitalWrite(semaphore1_yellow, LOW);
-    
     digitalWrite(semaphore1_green, HIGH); 
     logic = 2;
   }

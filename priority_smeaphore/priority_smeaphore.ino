@@ -2,11 +2,10 @@
 
 TaskHandle_t semaphore1 = NULL;
 TaskHandle_t semaphore2 = NULL;
-//TaskHandle_t semaphore3 = NULL;
-//TaskHandle_t semaphore4 = NULL;
 
-const int semaphore1_green = 3;
-const int semaphore1_yellow = 2;
+
+const int semaphore1_green = 9;
+const int semaphore1_yellow = 8;
 const int sempahore1_red = 4;
 
 const int semaphore2_green = 5;
@@ -29,8 +28,7 @@ void setup() {
     
     xTaskCreate(TaskFun, "Sema1", 128, 2, 2,&semaphore1);
     xTaskCreate(TaskFun, "Sema2", 128, 1, 1, &semaphore2);
-    //xTaskCreate(TaskFun, "Sema3", 128, 4, 1,&semaphore3);
-    //xTaskCreate(TaskFun, "Sema4", 128, 1, 1, &semaphore4);
+    vTaskStartScheduler();
   
 
 }
@@ -91,14 +89,7 @@ void TaskFun(void *pvParameters){
         vTaskPrioritySet(semaphore2, 2);
         vTaskPrioritySet(semaphore1, 1);      
         break;
-      /*case 3:
-        vTaskPrioritySet(semaphore3, 2);
-        vTaskPrioritySet(semaphore2, 1);
-        break;
-      case 4:
-        vTaskPrioritySet(semaphore4, 2);    
-        vTaskPrioritySet(semaphore3, 1);    
-        break;*/
+     
       }
     
   }
